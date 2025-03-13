@@ -1,0 +1,48 @@
+javascript:(function(){
+    // === Meet4Fun Auto-Background Changer ===
+    // Randomly changes your Google Meet virtual background
+
+    // === User Configuration ===
+    const userConfig = {
+        backgroundUrls: prompt("Enter background image URLs (comma-separated):").split(',').map(url => url.trim()),
+        changeFrequencyMin: parseInt(prompt("Minimum time between background changes (in milliseconds):", "60000")),
+        changeFrequencyMax: parseInt(prompt("Maximum time between background changes (in milliseconds):", "300000")),
+        randomizeOrder: confirm("Randomize background order?")
+    };
+
+    // === Helper Functions ===
+    function getRandomInterval(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getNextBackground() {
+        if (userConfig.randomizeOrder) {
+            return userConfig.backgroundUrls[Math.floor(Math.random() * userConfig.backgroundUrls.length)];
+        } else {
+            const next = userConfig.backgroundUrls.shift();
+            userConfig.backgroundUrls.push(next);
+            return next;
+        }
+    }
+
+    function changeBackground(url) {
+        console.log(`Changing background to: ${url}`);
+        // Placeholder: real background change would need Google Meet’s UI access
+    }
+
+    function scheduleNextChange() {
+        const nextBackground = getNextBackground();
+        changeBackground(nextBackground);
+
+        const nextInterval = getRandomInterval(userConfig.changeFrequencyMin, userConfig.changeFrequencyMax);
+        setTimeout(scheduleNextChange, nextInterval);
+    }
+
+    // === Start the Auto-Background Changer ===
+    if (userConfig.backgroundUrls.length > 0) {
+        scheduleNextChange();
+        console.log("Meet4Fun Auto-Background Changer started!");
+    } else {
+        console.warn("No background URLs provided. Changer not started.");
+    }
+})();
