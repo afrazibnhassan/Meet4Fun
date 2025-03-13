@@ -1,0 +1,46 @@
+javascript:(function(){
+    // === Meet4Fun Auto-Mic Glitcher ===
+    // Randomly mutes and unmutes your mic to simulate audio issues
+
+    // === User Configuration ===
+    const userConfig = {
+        glitchFrequencyMin: parseInt(prompt("Minimum time between mic glitches (in milliseconds):", "30000")),
+        glitchFrequencyMax: parseInt(prompt("Maximum time between mic glitches (in milliseconds):", "120000")),
+        glitchDurationMin: parseInt(prompt("Minimum mic on duration (in milliseconds):", "1000")),
+        glitchDurationMax: parseInt(prompt("Maximum mic on duration (in milliseconds):", "5000")),
+        randomizeOrder: confirm("Randomize mic on/off timing?")
+    };
+
+    // === Helper Functions ===
+    function getRandomInterval(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function toggleMic(state) {
+        let micButton = document.querySelector("[aria-label*='Turn on microphone']") || document.querySelector("[aria-label*='Turn off microphone']");
+        if (micButton) {
+            if ((state === 'on' && micButton.getAttribute('aria-label').includes('Turn on')) ||
+                (state === 'off' && micButton.getAttribute('aria-label').includes('Turn off'))) {
+                micButton.click();
+                console.log(`Mic turned ${state}`);
+            }
+        } else {
+            console.warn("Mic button not found");
+        }
+    }
+
+    function glitchMic() {
+        toggleMic('on');
+        let onDuration = getRandomInterval(userConfig.glitchDurationMin, userConfig.glitchDurationMax);
+
+        setTimeout(() => {
+            toggleMic('off');
+            let nextGlitch = getRandomInterval(userConfig.glitchFrequencyMin, userConfig.glitchFrequencyMax);
+            setTimeout(glitchMic, nextGlitch);
+        }, onDuration);
+    }
+
+    // === Start the Auto-Mic Glitcher ===
+    glitchMic();
+    console.log("Meet4Fun Auto-Mic Glitcher started!");
+})();
