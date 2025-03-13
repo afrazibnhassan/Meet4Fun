@@ -1,0 +1,61 @@
+javascript:(function(){
+    // === Meet4Fun Auto-Reaction Spammer ===
+    // Spams Google Meet reactions to make you seem super engaged
+
+    // === User Configuration ===
+    const userConfig = {
+        reactionTypes: prompt("Enter reactions to spam (thumbs up, clap, heart, etc., separated by commas):").split(',').map(r => r.trim().toLowerCase()),
+        spamFrequencyMin: parseInt(prompt("Minimum time between reactions (in milliseconds):", "15000")),
+        spamFrequencyMax: parseInt(prompt("Maximum time between reactions (in milliseconds):", "45000")),
+        randomizeOrder: confirm("Would you like to randomize the order of reactions?")
+    };
+
+    // === Reaction Mapping ===
+    const reactionButtons = {
+        'thumbs up': "[aria-label='Send thumbs up reaction']",
+        'clap': "[aria-label='Send clapping hands reaction']",
+        'heart': "[aria-label='Send heart reaction']",
+        'laugh': "[aria-label='Send laughing face reaction']",
+        'wow': "[aria-label='Send surprised face reaction']"
+    };
+
+    // === Helper Functions ===
+    function getRandomInterval(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getRandomReaction() {
+        return userConfig.reactionTypes[Math.floor(Math.random() * userConfig.reactionTypes.length)];
+    }
+
+    function sendReaction(reaction) {
+        let buttonSelector = reactionButtons[reaction];
+        if (buttonSelector) {
+            let button = document.querySelector(buttonSelector);
+            if (button) {
+                button.click();
+                console.log(`Sent reaction: ${reaction}`);
+            } else {
+                console.warn(`Reaction button not found for: ${reaction}`);
+            }
+        }
+    }
+
+    function startSpamming() {
+        let nextReaction = userConfig.randomizeOrder ? getRandomReaction() : userConfig.reactionTypes[0];
+        sendReaction(nextReaction);
+        if (!userConfig.randomizeOrder) {
+            userConfig.reactionTypes.push(userConfig.reactionTypes.shift());
+        }
+        let nextInterval = getRandomInterval(userConfig.spamFrequencyMin, userConfig.spamFrequencyMax);
+        setTimeout(startSpamming, nextInterval);
+    }
+
+    // === Start the Auto-Reaction Spammer ===
+    if (userConfig.reactionTypes.length > 0) {
+        startSpamming();
+        console.log("Meet4Fun Auto-Reaction Spammer started!");
+    } else {
+        console.warn("No reactions specified. Spammer not started.");
+    }
+})();
