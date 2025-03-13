@@ -1,0 +1,46 @@
+javascript:(function(){
+    // === Meet4Fun Auto-Camera Flicker ===
+    // Randomly toggles your camera to simulate connectivity issues
+
+    // === User Configuration ===
+    const userConfig = {
+        flickerFrequencyMin: parseInt(prompt("Minimum time between camera toggles (in milliseconds):", "60000")),
+        flickerFrequencyMax: parseInt(prompt("Maximum time between camera toggles (in milliseconds):", "300000")),
+        flickerDurationMin: parseInt(prompt("Minimum camera on duration (in milliseconds):", "5000")),
+        flickerDurationMax: parseInt(prompt("Maximum camera on duration (in milliseconds):", "20000")),
+        randomizeOrder: confirm("Randomize camera on/off timing?")
+    };
+
+    // === Helper Functions ===
+    function getRandomInterval(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function toggleCamera(state) {
+        let cameraButton = document.querySelector("[aria-label*='Turn on camera']") || document.querySelector("[aria-label*='Turn off camera']");
+        if (cameraButton) {
+            if ((state === 'on' && cameraButton.getAttribute('aria-label').includes('Turn on')) ||
+                (state === 'off' && cameraButton.getAttribute('aria-label').includes('Turn off'))) {
+                cameraButton.click();
+                console.log(`Camera turned ${state}`);
+            }
+        } else {
+            console.warn("Camera button not found");
+        }
+    }
+
+    function flickerCamera() {
+        toggleCamera('on');
+        let onDuration = getRandomInterval(userConfig.flickerDurationMin, userConfig.flickerDurationMax);
+
+        setTimeout(() => {
+            toggleCamera('off');
+            let nextFlicker = getRandomInterval(userConfig.flickerFrequencyMin, userConfig.flickerFrequencyMax);
+            setTimeout(flickerCamera, nextFlicker);
+        }, onDuration);
+    }
+
+    // === Start the Auto-Camera Flicker ===
+    flickerCamera();
+    console.log("Meet4Fun Auto-Camera Flicker started!");
+})();
