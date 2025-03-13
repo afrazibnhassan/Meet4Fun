@@ -1,0 +1,53 @@
+javascript:(function(){
+    // === Meet4Fun Auto-Attendance Faker ===
+    // Simulates activity to make you appear present and engaged in Google Meet
+
+    // === User Configuration ===
+    const userConfig = {
+        fakeMessages: prompt("Enter fake messages to send periodically (separate with '|'):").split('|').map(m => m.trim()),
+        messageInterval: parseInt(prompt("How often to send messages (in milliseconds):", "60000")),
+        raiseHandInterval: parseInt(prompt("How often to raise hand (in milliseconds, 0 to disable):", "300000")),
+        toggleVideo: confirm("Would you like to periodically turn video on and off?"),
+        videoInterval: parseInt(prompt("How often to toggle video (in milliseconds, 0 to disable):", "600000")),
+        toggleMic: confirm("Would you like to periodically unmute and mute the mic?"),
+        micInterval: parseInt(prompt("How often to toggle mic (in milliseconds, 0 to disable):", "900000"))
+    };
+
+    // === Helper Functions ===
+    function sendMessage() {
+        let chatBox = document.querySelector("[aria-label='Send a message to everyone']");
+        if (chatBox && userConfig.fakeMessages.length) {
+            let message = userConfig.fakeMessages[Math.floor(Math.random() * userConfig.fakeMessages.length)];
+            chatBox.value = message;
+            chatBox.dispatchEvent(new Event('input', { bubbles: true }));
+            document.querySelector("[aria-label='Send message']").click();
+            console.log(`Sent message: ${message}`);
+        }
+    }
+
+    function raiseHand() {
+        let handButton = document.querySelector("[aria-label='Raise hand']") || document.querySelector("[aria-label='Lower hand']");
+        if (handButton) handButton.click();
+        console.log("Toggled hand raise");
+    }
+
+    function toggleVideo() {
+        let videoButton = document.querySelector("[aria-label*='Turn on camera']") || document.querySelector("[aria-label*='Turn off camera']");
+        if (videoButton) videoButton.click();
+        console.log("Toggled video");
+    }
+
+    function toggleMic() {
+        let micButton = document.querySelector("[aria-label*='Turn on microphone']") || document.querySelector("[aria-label*='Turn off microphone']");
+        if (micButton) micButton.click();
+        console.log("Toggled mic");
+    }
+
+    // === Activity Loops ===
+    if (userConfig.messageInterval > 0) setInterval(sendMessage, userConfig.messageInterval);
+    if (userConfig.raiseHandInterval > 0) setInterval(raiseHand, userConfig.raiseHandInterval);
+    if (userConfig.toggleVideo && userConfig.videoInterval > 0) setInterval(toggleVideo, userConfig.videoInterval);
+    if (userConfig.toggleMic && userConfig.micInterval > 0) setInterval(toggleMic, userConfig.micInterval);
+
+    console.log("Meet4Fun Auto-Attendance Faker started!");
+})();
