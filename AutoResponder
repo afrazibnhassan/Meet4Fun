@@ -1,0 +1,70 @@
+javascript:(function(){
+    // === Meet4Fun Auto-Responder (Ultra Advanced) ===
+    // Fully customizable automatic chat responder for Google Meet
+
+    // === User Configuration Panel ===
+    const userConfig = {
+        keywords: prompt("Enter keywords (comma separated):").split(",").map(k => k.trim()),
+        responses: prompt("Enter possible responses (use {answer} where the solved answer should appear, separated by '|'):").split("|").map(r => r.trim()),
+        allowTypos: confirm("Would you like to allow occasional spelling mistakes?"),
+        lowercaseChance: parseFloat(prompt("Enter the percentage chance (0-100) for a response to be lowercase:", "30")) / 100,
+        checkInterval: parseInt(prompt("Enter how often the chat should be checked (in milliseconds):", "2000")),
+        mathRegex: /\d+[\+\-\*\/]\d+/
+    };
+
+    // === Helper Functions ===
+    function solveMath(expression) {
+        try {
+            return eval(expression);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function introduceTypos(text) {
+        let chars = text.split('');
+        if (chars.length > 1) {
+            let index = Math.floor(Math.random() * chars.length);
+            chars[index] = String.fromCharCode(chars[index].charCodeAt(0) + 1);
+        }
+        return chars.join('');
+    }
+
+    function maybeLowercase(text) {
+        return Math.random() < userConfig.lowercaseChance ? text.toLowerCase() : text;
+    }
+
+    function sendResponse(response) {
+        let chatBox = document.querySelector("[aria-label='Send a message to everyone']");
+        if (chatBox) {
+            chatBox.value = response;
+            chatBox.dispatchEvent(new Event('input', { bubbles: true }));
+            document.querySelector("[aria-label='Send message']").click();
+        }
+    }
+
+    // === Main Chat Monitoring ===
+    function respondToChat() {
+        let messages = document.querySelectorAll(".GDhqjd");
+        messages.forEach(msg => {
+            let text = msg.innerText;
+            if (userConfig.keywords.some(keyword => text.includes(keyword))) {
+                let expression = text.match(userConfig.mathRegex);
+                if (expression) {
+                    let answer = solveMath(expression[0]);
+                    if (answer !== null) {
+                        let responseTemplate = userConfig.responses[Math.floor(Math.random() * userConfig.responses.length)];
+                        let response = responseTemplate.replace("{answer}", answer);
+                        if (userConfig.allowTypos) response = introduceTypos(response);
+                        response = maybeLowercase(response);
+                        sendResponse(response);
+                    }
+                }
+            }
+        });
+    }
+
+    // === Start the Auto-Responder ===
+    setInterval(respondToChat, userConfig.checkInterval);
+    console.log("Meet4Fun Ultra-Advanced Auto-Responder started with user-defined settings!");
+})();
