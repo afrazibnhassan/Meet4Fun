@@ -1,6 +1,6 @@
 # Meet4Fun — Google Meet Enhancement Extension
 
-Meet4Fun brings a set of powerful, fully customizable features that make your Google Meet experience more convenient, automated, and engaging. Below are the detailed features (excluding Auto-Nodder) and how to use them directly from the browser’s URL bar with JavaScript commands.
+Meet4Fun brings a set of powerful, fully customizable features that make your Google Meet experience more convenient, automated, and engaging. Below are the detailed features and how to use them directly from the browser’s URL bar with JavaScript commands.
 
 ## 🚀 How to Use Meet4Fun Scripts
 
